@@ -5,12 +5,12 @@
 
 <mapper namespace="com.hhg.jerry.dao.CityDao">
     <cache blocking="true" eviction="LRU"
-           flushInterval="500" readOnly="false" size="100" type=""/>
+           flushInterval="500" readOnly="false" size="100" type="perpetual"/>
     <select id="getById"
             resultType="com.hhg.jerry.model.City"
             parameterType="java.lang.Long"
-            useCache="true" flushCache="false"
-            >
+            useCache="true" flushCache="false">
         SELECT * FROM city where id = #{id}
     </select>
+
 </mapper>
