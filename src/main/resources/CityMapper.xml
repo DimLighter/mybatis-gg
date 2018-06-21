@@ -1,13 +1,57 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.hhg.jerry.dao.CityDao">
-    <cache blocking="true" eviction="LRU"
-           flushInterval="500" readOnly="false" size="100" type="perpetual"/>
-    <select id="getById" resultType="City" parameterType="java.lang.Long">
+    <resultMap id="cityResultMap" type="City">
+        <id property="id" column="ID" javaType="long" />
+        <result property="name" column="Name"/>
+        <result property="countryCode" column="CountryCode"/>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+    </resultMap>
+    <cache blocking="true" eviction="LRU" flushInterval="500" readOnly="false" size="100" type="perpetual"/>
+    <select id="getById" resultType="City">
+        SELECT * FROM city where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <select id="getByNameAndCountryCode" resultType="City">
+        SELECT * FROM city where Name = #{name} and CountryCode = #{cCode,javaType=string,jdbcType=VARCHAR}
+    </select>
+
+    <select id="getByName" resultType="City">
+        SELECT * FROM city where Name like '%${name}%'
+    </select>
+
+    <select id="getCityAsMapById" resultType="java.util.Map">
         SELECT * FROM city where id = #{id}
     </select>
+
+    <select id="getListLTId" resultType="City" parameterType="java.lang.Long">
+        select * from city where id &lt;= #{maxId}
+    </select>
+
+    <select id="getListCDATALtId" resultType="City" parameterType="java.lang.Long">
+        select * from city where id  <![CDATA[<=]]> #{maxId}
+    </select>
+
+    <select id="getListBetweenIds" resultType="City">
+        select * from city where id between #{arg0} and #{arg1} order by ${arg2}
+    </select>
+
+    <select id="getCityMappedById" resultType="City">
+        select * from city where id &lt;= #{maxId}
+    </select>
+    
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into city(Name,CountryCode,District,Population) values (#{name}, #{countryCode}, #{district}, #{population})
+    </insert>
+
+    <update id="update" parameterType="City">
+        update city set Name=#{name},CountryCode=#{countryCode},District=#{district},Population=#{population} where ID = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from city where ID = #{id}
+    </delete>
 
 </mapper>
