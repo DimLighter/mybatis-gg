@@ -36,5 +36,6 @@
     </environments>
     <mappers>
         <mapper resource="CityMapper.xml"/>
+        <mapper class="com.hhg.jerry.dao.CountryDao"/>
     </mappers>
 </configuration>

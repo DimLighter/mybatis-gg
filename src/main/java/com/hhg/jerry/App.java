@@ -1,7 +1,9 @@
 package com.hhg.jerry;
 
 import com.hhg.jerry.dao.CityDao;
+import com.hhg.jerry.dao.CountryDao;
 import com.hhg.jerry.model.City;
+import com.hhg.jerry.model.Country;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -34,6 +36,8 @@ public class App {
     private static void queryTest(SqlSession sqlSession){
         queryCityTest(sqlSession.getMapper(CityDao.class));
         City city = sqlSession.selectOne("com.hhg.jerry.dao.CityDao.getById",1L);
+
+        queryCountryTest(sqlSession.getMapper(CountryDao.class));
     }
 
     private static void queryCityTest(CityDao cityDao){
@@ -50,6 +54,11 @@ public class App {
         List<City> cities2= cityDao.getListBetweenIds(10L,20L,"ID");
         Map<Long, City> mappedByIdCities = cityDao.getCityMappedById(10L);
         log.debug("queryCityTest exit");
+    }
+
+    private static void queryCountryTest(CountryDao countryDao){
+        Country country = countryDao.getByCode("BGD");
+        log.debug(country.toString());
     }
 
     private static void insertTest(SqlSession sqlSession){
