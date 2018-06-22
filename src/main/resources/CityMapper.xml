@@ -3,7 +3,7 @@
 
 <mapper namespace="com.hhg.jerry.dao.CityDao">
     <resultMap id="cityResultMap" type="City">
-        <id property="id" column="ID" javaType="long" />
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
         <result property="name" column="Name"/>
         <result property="countryCode" column="CountryCode"/>
         <result property="district" column="district"/>
