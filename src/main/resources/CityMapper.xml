@@ -9,7 +9,7 @@
         <result property="district" column="district"/>
         <result property="population" column="population"/>
     </resultMap>
-    <cache blocking="true" eviction="LRU" flushInterval="500" readOnly="false" size="100" type="perpetual"/>
+    <cache blocking="true" eviction="LRU" flushInterval="500" readOnly="true" size="100" type="perpetual"/>
     <select id="getById" resultType="City">
         SELECT * FROM city where id = #{id,jdbcType=INTEGER}
     </select>
@@ -54,4 +54,104 @@
         delete from city where ID = #{id}
     </delete>
 
+    <select id="getCityIf" resultType="City">
+        select * from city where CountryCode=#{countryCode}
+        <if test="district != null">
+            and District like #{district}
+        </if>
+    </select>
+
+    <select id="getCityIfLike" resultType="City">
+        <bind name="likeDistrict" value="'%' + district + '%'" />
+        select * from city where CountryCode=#{countryCode}
+        <if test="district != null">
+            and District like #{likeDistrict}
+        </if>
+    </select>
+
+    <select id="getCityChoose" resultType="City" parameterType="City">
+        select * from city where CountryCode=#{countryCode}
+        <choose>
+            <when test="name != null">
+                and Name = #{name}
+            </when>
+            <when test="district != null">
+                and District = #{district}
+            </when>
+            <otherwise>
+                and Name = 'Peking'
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getCityWhere" resultType="City" parameterType="City">
+        select * from city
+        <where>
+            <if test="countryCode != null">CountryCode=#{countryCode}</if>
+            <if test="name != null">and Name=#{name}</if>
+            <if test="district != null">and District=#{district}</if>
+        </where>
+    </select>
+
+    <select id="getCityTrim" resultType="City" parameterType="City">
+        select * from city
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <if test="countryCode != null">CountryCode=#{countryCode}</if>
+            <if test="name != null">and Name=#{name}</if>
+            <if test="district != null">and District=#{district}</if>
+        </trim>
+    </select>
+
+    <update id="updateSet" parameterType="City">
+        update city
+        <set>
+            <if test="name != null">Name=#{name},</if>
+            <if test="countryCode != null">CountryCode=#{countryCode},</if>
+            <if test="district != null">District=#{district},</if>
+            <if test="population != null">Population=#{population}</if>
+        </set>
+        where ID = #{id}
+    </update>
+
+    <update id="updateTrim" parameterType="City">
+        update city
+            <trim prefix="SET" suffixOverrides=",">
+                    <if test="name != null">Name=#{name},</if>
+                    <if test="countryCode != null">CountryCode=#{countryCode},</if>
+                    <if test="district != null">District=#{district},</if>
+                    <if test="population != null">Population=#{population}</if>
+            </trim>
+        where ID = #{id}
+    </update>
+
+    <!-- index是集合索引，item为该索引的元素 -->
+    <select id="getCityForEachList" resultType="City" parameterType="java.util.List">
+        select * from city where ID in
+        <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+            #{item},#{index}
+        </foreach>
+    </select>
+
+    <!-- index是集合索引，item为该索引的元素 -->
+    <select id="getCityForEachArray" resultType="City">
+        select * from city where ID in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item},#{index}
+        </foreach>
+    </select>
+
+    <!-- index是集合索引，item为该索引的元素 -->
+    <select id="getCityForEachSet" resultType="City" parameterType="java.util.Set">
+        select * from city where ID in
+        <foreach item="item" index="index" collection="collection" open="(" separator="," close=")">
+            #{item},#{index}
+        </foreach>
+    </select>
+
+    <select id="getCityForEachMap" resultType="City">
+        select * from city where ID in
+        <foreach item="item" index="index" collection="ids" open="(" separator="," close=")">
+            #{item},#{index}
+        </foreach>
+    </select>
 </mapper>

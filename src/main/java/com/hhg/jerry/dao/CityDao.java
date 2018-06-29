@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by lining on 2018/6/14.
@@ -33,4 +34,23 @@ public interface CityDao {
     int update(City city);
 
     int delete(Long id);
+
+    List<City> getCityIf(@Param(value = "countryCode")String countryCode, @Param(value = "district")String district);
+
+    List<City> getCityIfLike(@Param(value = "countryCode")String countryCode, @Param(value = "district")String district);
+
+    List<City> getCityChoose(City city);
+
+    List<City> getCityWhere(City city);
+
+    List<City> getCityTrim(City city);
+
+    int updateSet(City city);
+
+    int updateTrim(City city);
+
+    List<City> getCityForEachList(List<Long> ids);
+    List<City> getCityForEachArray(Long[] ids);
+    List<City> getCityForEachSet(Set<Long> ids);
+    List<City> getCityForEachMap(@Param(value = "ids") Map<Long,Long> ids);
 }
