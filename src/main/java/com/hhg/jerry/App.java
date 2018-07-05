@@ -47,8 +47,8 @@ public class App {
         List<City> sqlInjected = cityDao.getByName("zzz' or name like '%jin");
 
         Map<String, Object> mapCity = cityDao.getCityAsMapById(1L);
-        List<City> cities = cityDao.getListLTId(10L);
-        cities = cityDao.getListCDATALtId(10L);
+        List<City> cities = cityDao.getListLTId(30L);
+        cities = cityDao.getListCDATALtId(30L);
         List<City> cities2 = cityDao.getListBetweenIds(10L, 20L, "ID");
         Map<Long, City> mappedByIdCities = cityDao.getCityMappedById(10L);
         log.debug("queryCityTest exit");
@@ -135,7 +135,7 @@ public class App {
     private static City buildCity() {
         City city = new City();
         city.setName("demoCity");
-        city.setCountryCode("AAA");
+        city.setCountryCode("CHN");
         city.setDistrict("UnKnow-District");
         city.setPopulation(new Long(new Random().nextInt(10000)));
         return city;

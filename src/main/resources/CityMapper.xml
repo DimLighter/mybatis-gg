@@ -10,8 +10,8 @@
         <result property="population" column="population"/>
     </resultMap>
     <cache blocking="true" eviction="LRU" flushInterval="500" readOnly="true" size="100" type="perpetual"/>
-    <select id="getById" resultType="City">
-        SELECT * FROM city where id = #{id,jdbcType=INTEGER}
+    <select id="getById" resultMap="com.hhg.jerry.dao.CityDao.cityResultMap">
+        SELECT * FROM city where id = #{id}
     </select>
 
     <select id="getByNameAndCountryCode" resultType="City">
@@ -26,7 +26,8 @@
         SELECT * FROM city where id = #{id}
     </select>
 
-    <select id="getListLTId" resultType="City" parameterType="java.lang.Long">
+    <select id="getListLTId" resultType="City" parameterType="java.lang.Long"
+    fetchSize="20">
         select * from city where id &lt;= #{maxId}
     </select>
 
