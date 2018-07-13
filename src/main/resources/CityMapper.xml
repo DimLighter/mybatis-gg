@@ -26,17 +26,12 @@
         SELECT * FROM city where id = #{id}
     </select>
 
-    <select id="getListLTId" resultType="City" parameterType="java.lang.Long"
-    fetchSize="20">
-        select * from city where id &lt;= #{maxId}
-    </select>
-
     <select id="getListCDATALtId" resultType="City" parameterType="java.lang.Long">
         select * from city where id  <![CDATA[<=]]> #{maxId}
     </select>
 
     <select id="getListBetweenIds" resultType="City">
-        select * from city where id between #{arg0} and #{arg1} order by ${arg2}
+        select * from city where id between #{param1} and #{arg1} order by ${arg2}
     </select>
 
     <select id="getCityMappedById" resultType="City">
@@ -155,4 +150,11 @@
             #{item},#{index}
         </foreach>
     </select>
+
+    <insert id="insertBatch" useGeneratedKeys="true" keyProperty="id">
+        insert into city (Name,CountryCode,District,Population) values
+        <foreach item="city" index="index" collection="collection" separator=",">
+            (#{city.name}, #{city.countryCode}, #{city.district}, #{index})
+        </foreach>
+    </insert>
 </mapper>

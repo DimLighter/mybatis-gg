@@ -19,7 +19,6 @@ import java.util.*;
  */
 public class App {
     private static Log log = LogFactory.getLog(App.class);
-
     public static void main(String[] args) throws Exception {
         InputStream inputStream = Resources.getResourceAsStream("mybatis.xml");
         SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
@@ -47,8 +46,7 @@ public class App {
         List<City> sqlInjected = cityDao.getByName("zzz' or name like '%jin");
 
         Map<String, Object> mapCity = cityDao.getCityAsMapById(1L);
-        List<City> cities = cityDao.getListLTId(30L);
-        cities = cityDao.getListCDATALtId(30L);
+        List<City> cities = cityDao.getListCDATALtId(30L);
         List<City> cities2 = cityDao.getListBetweenIds(10L, 20L, "ID");
         Map<Long, City> mappedByIdCities = cityDao.getCityMappedById(10L);
         log.debug("queryCityTest exit");
@@ -95,7 +93,11 @@ public class App {
         cities = cityDao.getCityForEachSet(idsSet);
         //接口方法不加@Param(value = "ids")会报错-》 The expression 'ids' evaluated to a null value
         cities = cityDao.getCityForEachMap(idsMap);
-
+        cities = cities.subList(0,2);
+        cityDao.insertBatch(cities);
+        for(City c : cities){
+            cityDao.delete(c.getId());
+        }
         log.debug("queryCityDynamicSqlTest exit");
     }
 

@@ -20,8 +20,6 @@ public interface CityDao {
 
     Map<String, Object> getCityAsMapById(Long id);
 
-    List<City> getListLTId(Long maxId);
-
     List<City> getListCDATALtId(Long maxId);
 
     List<City> getListBetweenIds(Long minId, Long maxId, String orderByColumn);
@@ -53,4 +51,6 @@ public interface CityDao {
     List<City> getCityForEachArray(Long[] ids);
     List<City> getCityForEachSet(Set<Long> ids);
     List<City> getCityForEachMap(@Param(value = "ids") Map<Long,Long> ids);
+
+    int insertBatch(List<City> cities);
 }
