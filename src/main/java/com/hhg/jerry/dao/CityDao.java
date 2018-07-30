@@ -1,6 +1,6 @@
 package com.hhg.jerry.dao;
 
-import com.hhg.jerry.model.City;
+import com.hhg.jerry.model.*;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,9 +14,26 @@ import java.util.Set;
 public interface CityDao {
     City getById(Long id);
 
+    List<CityBase> discriminatorSelect();
+
+    CityCountry getCityCountryById1(Long id);
+    CityCountry getCityCountryById2(Long id);
+    CityCountryNearBy getCityCountryById3(Long id);
+
+    CityCountry getCityNestSelectById(Long id);
+
+    CountryCity getCountryCityResultMap(String code);
+
+    Country getCountryByCode(String code);
+
+    CountryCity getCountryByCode1(String code);
+    CountryCity getCountryByCode2(String code);
+
+    List<City> getCityByCode(String code);
+
     City getByNameAndCountryCode(@Param(value = "name") String name, @Param(value = "cCode") String countryCode);
 
-    List<City> getByName(@Param(value = "name") String name);
+    List<CityConstructor> getByName(@Param(value = "name") String name);
 
     Map<String, Object> getCityAsMapById(Long id);
 

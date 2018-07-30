@@ -2,8 +2,7 @@ package com.hhg.jerry;
 
 import com.hhg.jerry.dao.CityDao;
 import com.hhg.jerry.dao.CountryDao;
-import com.hhg.jerry.model.City;
-import com.hhg.jerry.model.Country;
+import com.hhg.jerry.model.*;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
@@ -39,16 +38,28 @@ public class App {
 
     private static void queryCityTest(CityDao cityDao) {
         City city = cityDao.getById(1L);
+        CityCountry beijing1 = cityDao.getCityCountryById1(1891L);
+        CityCountry beijing2 = cityDao.getCityCountryById2(1891L);
+        CityCountryNearBy shanghai = cityDao.getCityCountryById3(1890L);
+        CountryCity countryCity = cityDao.getCountryCityResultMap("CHN");
+        CityCountry beijing = cityDao.getCityNestSelectById(1894L);
+        CityCountry newYork = cityDao.getCityNestSelectById(3793L);
         city = cityDao.getByNameAndCountryCode("Shanghai", "CHN");
+
+        CountryCity usa = cityDao.getCountryByCode1("USA");
+        CountryCity chn = cityDao.getCountryByCode2("CHN");
+
         log.debug(city.toString());
 
-        List<City> citiesLikeName = cityDao.getByName("zhou");
-        List<City> sqlInjected = cityDao.getByName("zzz' or name like '%jin");
+        List<CityConstructor> citiesLikeName = cityDao.getByName("zhou");
+        List<CityConstructor> sqlInjected = cityDao.getByName("zzz' or name like '%jin");
 
         Map<String, Object> mapCity = cityDao.getCityAsMapById(1L);
         List<City> cities = cityDao.getListCDATALtId(30L);
         List<City> cities2 = cityDao.getListBetweenIds(10L, 20L, "ID");
         Map<Long, City> mappedByIdCities = cityDao.getCityMappedById(10L);
+
+        List<CityBase> cityBases = cityDao.discriminatorSelect();
         log.debug("queryCityTest exit");
     }
 

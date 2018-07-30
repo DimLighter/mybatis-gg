@@ -9,16 +9,189 @@
         <result property="district" column="district"/>
         <result property="population" column="population"/>
     </resultMap>
+
+    <resultMap id="cityConstructorResultMap" type="CityConstructor">
+        <constructor>
+            <idArg column="ID" name="id" javaType="java.lang.Long"/>
+            <arg column="Name" name="name" javaType="java.lang.String"/>
+            <arg column="CountryCode" name="countryCode" javaType="java.lang.String"/>
+        </constructor>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+    </resultMap>
+
+    <resultMap id="citySelectCountryResultMap" type="CityCountry">
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
+        <result property="name" column="Name"/>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+        <association property="country" column="CountryCode" javaType="Country" select="getCountryByCode"/>
+    </resultMap>
+
+    <resultMap id="cityCountryResultMap1" type="CityCountry">
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
+        <result property="name" column="Name"/>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+        <association property="country" resultMap="countryResultMap"/>
+    </resultMap>
+
+    <resultMap id="cityCountryResultMap2" type="CityCountry">
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
+        <result property="name" column="Name"/>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+        <association property="country" javaType="Country">
+            <id property="code" column="country_code"/>
+            <result property="name" column="country_name"/>
+            <result property="surfaceArea" column="SurfaceArea"/>
+            <result property="indepYear" column="IndepYear"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="cityCountryResultMap3" type="com.hhg.jerry.model.CityCountryNearBy">
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
+        <result property="name" column="Name"/>
+        <result property="district" column="district"/>
+        <result property="population" column="population"/>
+        <association property="country" resultMap="countryResultMap"/>
+        <association property="nearByCountry" resultMap="countryResultMap" columnPrefix="n_"/>
+    </resultMap>
+
+    <resultMap id="countryResultMap" type="Country">
+        <id property="code" column="country_code"/>
+        <result property="name" column="country_name"/>
+        <result property="surfaceArea" column="SurfaceArea"/>
+        <result property="indepYear" column="IndepYear"/>
+        <result property="continent" column="Continent" typeHandler="continentTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="countryResultMap1" type="com.hhg.jerry.model.CountryCity">
+        <id property="code" column="Code"/>
+        <result property="name" column="Name"/>
+        <result property="surfaceArea" column="SurfaceArea"/>
+        <result property="indepYear" column="IndepYear"/>
+        <result property="continent" column="Continent" typeHandler="continentTypeHandler"/>
+        <collection property="cityList" javaType="ArrayList" column="Code" select="getCityByCode"/>
+    </resultMap>
+
+    <resultMap id="countryResultMap2" type="com.hhg.jerry.model.CountryCity">
+        <id property="code" column="code"/>
+        <result property="name" column="Name"/>
+        <result property="surfaceArea" column="SurfaceArea"/>
+        <result property="indepYear" column="IndepYear"/>
+        <result property="continent" column="Continent" typeHandler="continentTypeHandler"/>
+        <collection property="cityList" columnPrefix="city_" resultMap="cityResultMap"/>
+    </resultMap>
+
+    <resultMap id="countryCityResultMap" type="com.hhg.jerry.model.CountryCity">
+        <id property="code" column="country_code"/>
+        <result property="name" column="country_name"/>
+        <result property="surfaceArea" column="SurfaceArea"/>
+        <result property="indepYear" column="IndepYear"/>
+        <result property="continent" column="Continent" typeHandler="continentTypeHandler"/>
+        <association property="capital" resultMap="cityResultMap"/>
+    </resultMap>
+
+    <resultMap id="cityResultMap1" type="com.hhg.jerry.model.CityBase">
+        <id property="id" column="ID" javaType="long" jdbcType="INTEGER" />
+        <result property="name" column="Name"/>
+        <discriminator javaType="string" column="CountryCode">
+            <case value="CHN" resultMap="chnResult"/>
+            <case value="USA" resultMap="usaResult"/>
+            <case value="FRA" resultType="com.hhg.jerry.model.CityFrance">
+                <result property="district" column="District"/>
+                <result property="population" column="Population"/>
+            </case>
+            <case value="DEU" resultMap="deuResult"/>
+        </discriminator>
+    </resultMap>
+
+    <resultMap id="usaResult" type="com.hhg.jerry.model.CityUSA">
+        <result property="district" column="District" />
+    </resultMap>
+
+    <resultMap id="deuResult" type="com.hhg.jerry.model.CityDEU" autoMapping="false">
+        <result property="district" column="District" />
+    </resultMap>
+
+    <resultMap id="chnResult" type="com.hhg.jerry.model.CityChina" extends="cityResultMap1">
+        <result property="population" column="population" />
+    </resultMap>
+
     <cache blocking="true" eviction="LRU" flushInterval="500" readOnly="true" size="100" type="perpetual"/>
     <select id="getById" resultMap="com.hhg.jerry.dao.CityDao.cityResultMap">
         SELECT * FROM city where id = #{id}
+    </select>
+
+    <select id="getCountryByCode1" resultMap="com.hhg.jerry.dao.CityDao.countryResultMap1">
+        select * from country where Code = #{code}
+    </select>
+
+    <select id="getCityByCode" resultMap="com.hhg.jerry.dao.CityDao.cityResultMap">
+        SELECT * FROM city where CountryCode = #{code}
+    </select>
+
+    <select id="getCountryByCode2" resultMap="com.hhg.jerry.dao.CityDao.countryResultMap2">
+        select country.Code as code,
+         country.Name,
+         country.SurfaceArea,
+         country.IndepYear,
+         country.Continent,
+         city.id as ID,
+         city.name as city_Name,
+         city.CountryCode as city_CountryCode,
+         city.District
+         from country left join city on country.Code = city.CountryCode where country.Code = #{code}
+    </select>
+
+
+    <select id="getCityNestSelectById" resultMap="com.hhg.jerry.dao.CityDao.citySelectCountryResultMap">
+        SELECT * FROM city where id = #{id}
+    </select>
+
+    <select id="getCountryByCode" resultMap="com.hhg.jerry.dao.CityDao.countryResultMap">
+        SELECT * FROM country where Code = #{code}
+    </select>
+
+    <select id="getCityCountryById1" resultMap="com.hhg.jerry.dao.CityDao.cityCountryResultMap1">
+        SELECT city.id,city.Name,city.District,city.Population,
+         country.Code as country_code, country.Name as country_name,country.SurfaceArea,country.IndepYear FROM city
+         left outer join country on city.CountryCode = country.Code
+         where id = #{id}
+    </select>
+
+    <select id="getCityCountryById2" resultMap="com.hhg.jerry.dao.CityDao.cityCountryResultMap2">
+        SELECT city.id,city.Name,city.District,city.Population,
+        country.Code as country_code, country.Name as country_name,country.SurfaceArea,country.IndepYear FROM city
+        left outer join country on city.CountryCode = country.Code
+        where id = #{id}
+    </select>
+
+    <select id="getCityCountryById3" resultMap="com.hhg.jerry.dao.CityDao.cityCountryResultMap3">
+        SELECT city.id,city.Name,city.District,city.Population,
+        country.Code as country_code, country.Name as country_name,country.SurfaceArea,country.IndepYear,
+        nearCountry.Code as n_country_code, nearCountry.Name as n_country_name,
+        nearCountry.SurfaceArea as n_SurfaceArea
+        FROM city
+        left outer join country on city.CountryCode = country.Code
+        left outer join country nearCountry on city.District = nearCountry.Code
+        where id = #{id}
+    </select>
+
+    <select id="getCountryCityResultMap" resultMap="com.hhg.jerry.dao.CityDao.countryCityResultMap">
+        select country.Code as country_code,country.Name as country_name,country.SurfaceArea,country.IndepYear,
+        city.id,city.Name,city.District,city.Population
+        from country
+        left outer join city on city.CountryCode = country.Code
+        where country.Code = #{code}
     </select>
 
     <select id="getByNameAndCountryCode" resultType="City">
         SELECT * FROM city where Name = #{name} and CountryCode = #{cCode,javaType=string,jdbcType=VARCHAR}
     </select>
 
-    <select id="getByName" resultType="City">
+    <select id="getByName" resultType="CityConstructor" resultMap="cityConstructorResultMap">
         SELECT * FROM city where Name like '%${name}%'
     </select>
 
@@ -36,6 +209,10 @@
 
     <select id="getCityMappedById" resultType="City">
         select * from city where id &lt;= #{maxId}
+    </select>
+    
+    <select id="discriminatorSelect" resultMap="cityResultMap1">
+        SELECT * FROM world.city where Name in ('Shanghai','New York','Tokyo','Paris','Berlin');
     </select>
     
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
